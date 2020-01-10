@@ -1,1 +1,1 @@
-# The Maze of The Waze
+# The Maze of The Waze project
