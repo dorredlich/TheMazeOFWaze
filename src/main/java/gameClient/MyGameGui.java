@@ -2,57 +2,41 @@ package gameClient;
 
 import Server.Game_Server;
 import Server.game_service;
-import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.node_data;
 import elements.Fruit;
 import elements.Robot;
-import org.json.JSONException;
 import org.json.JSONObject;
 import utils.Point3D;
 import utils.StdDraw;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
 
-public class MyGameGui implements ActionListener  {
+public class MyGameGui  {
+    game_service game;
     public  DGraph dg = new DGraph();
     Hashtable<Point3D, Fruit> fruits;
     Hashtable<Integer, Robot> robots;
     private static final long serialVersionUID = 6128157318970002904L;
-    LinkedList<Point3D> points = new LinkedList<Point3D>();
-    double X_min = Integer.MAX_VALUE;
-    double X_max = Integer.MIN_VALUE;
-    double Y_min = Integer.MAX_VALUE;
-    double Y_max = Integer.MIN_VALUE;
+    public double X_min = Integer.MAX_VALUE;
+    public double X_max = Integer.MIN_VALUE;
+    public double Y_min = Integer.MAX_VALUE;
+    public double Y_max = Integer.MIN_VALUE;
     double x;
     double y;
     boolean isRobot = false;
-   // KML_Logger KML;
+    public KML_Logger KML;
 
-    /**
-     * This function is a default constructor
-     */
+
     public MyGameGui(){
         this.dg =null;
         initGUI();
     }
-
-    public MyGameGui(DGraph g) {
-        this.dg = g;
-        initGUI();
-    }
-
-    public MyGameGui(DGraph g , Fruit f , Robot r) {
-        this.dg =g;
-        initGUI();
-    }
-
 
 
     /**
@@ -64,12 +48,12 @@ public class MyGameGui implements ActionListener  {
             String s ="";
             s = JOptionPane.showInputDialog(
                     null, "Please enter a Scenario number between 0-23");
-            int sen=Integer.parseInt(s);
-            if(sen<0 || sen>23) {
+            int scenario = Integer.parseInt(s);
+            if(scenario < 0 || scenario > 23) {
                 JOptionPane.showMessageDialog(input, "The number that you entered isn't a Scenario number " );
             }
             else {
-                game_service game = Game_Server.getServer(sen); // you have [0,23] games
+                game_service game = Game_Server.getServer(scenario);
                 String g = game.getGraph();
                 DGraph dg2 = new DGraph();
                 dg2.init(g);
@@ -86,7 +70,6 @@ public class MyGameGui implements ActionListener  {
                     f.findFruitPlace(dg2 , f);
                     fruits.put(p_f, f);
                 }
-                //robot
                 Robot r = new Robot();
                 JSONObject obj = new JSONObject(info);
                 JSONObject Robot =obj.getJSONObject("GameServer");
@@ -118,14 +101,13 @@ public class MyGameGui implements ActionListener  {
                         }
                     }
                 }
-                for (String robo : game.getRobots()) {
+                for (String sRobot : game.getRobots()) {
                     Robot ro = new Robot();
-                    ro.init(robo);
+                    ro.init(sRobot);
                     int id = ro.getId();
                     robots.put(id, ro);
                 }
                 initGUI();
-                //startGameNow(game, dg , sen);
                 moveManual(game);
             }
         }
@@ -134,208 +116,45 @@ public class MyGameGui implements ActionListener  {
         }
     }
 
-
     /**
-     * This function is playing the automatic choice, and sent it to moveautomatic
+     * Play Automatic to choose kind of scenario and send to class AutoGame to start play.
      */
     public void Playautomatic() {
-        try {
-            JFrame input = new JFrame();
-            String s = "";
-            s = JOptionPane.showInputDialog(
-                    null, "Please enter a Scenario number between 0-23");
-            int scenario = Integer.parseInt(s);
-            if(scenario < 0 || scenario > 23) {
-                JOptionPane.showMessageDialog(input, "The number that you entered isn't a Scenario number " );
-            }
-            else {
-                game_service game = Game_Server.getServer(scenario); // you have [0,23] games
-                String g = game.getGraph();
-                DGraph dg2 = new DGraph();
-                dg2.init(g);
-                this.dg = dg2;
-                String info = game.toString();
-                // fruit
-                if (fruits == null ) {
-                    fruits= new Hashtable<>();
-                }
-                for (String  fruit : game.getFruits()) {
-                    Fruit f = new Fruit();
-                    f.init(fruit);
-                    Point3D p_f	=f.getPoint3D();
-                    f.findFruitPlace(dg2 , f);
-                    fruits.put(p_f, f);
-                }
 
-                //robot
-                Robot r = new Robot();
-                JSONObject obj = new JSONObject(info);
-                JSONObject Robot =obj.getJSONObject("GameServer");
-                int amountRobot = Robot.getInt("robots");
-                Collection<node_data> node = dg.getV();
-                int size = node.size();
-                int rnd = 0;
-                if (robots == null ) {
-                    robots = new Hashtable<Integer, Robot>();
-                }
-                int counter=0;
-                Set <Point3D> allFruits = fruits.keySet();
-                for (Point3D Point : allFruits) {
-                    if (counter < fruits.size()) {
-                        if (counter >= amountRobot ) {
-                            break;
-                        }
-                        Fruit placeFruit = fruits.get(Point);
-                        r.setSrc(placeFruit.getSrc());
-                        game.addRobot(placeFruit.getSrc());
-                        counter++;
-                    }
-                    else {
-                        while (counter < amountRobot) {
-                            rnd = (int) (Math.random()*size);
-                            if (dg.getNode(rnd) != null) {
-                                game.addRobot(rnd);
-                                counter++;
-                            }
-                        }
-                    }
-                }
-                for (String robo : game.getRobots()) {
-                    Robot ro = new Robot();
-                    ro.init(robo);
-                    int id = ro.getId();
-                    robots.put(id, ro);
-                }
-                initGUI();
-                startGameNow(game, dg2 , scenario);
-            }
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    /**
-     * This function gets game and graph start the game and while the game run
-     * she send the parameters to move robots
-     * @param game
-     * @param gg
-     */
-    public void startGameNow(game_service game ,DGraph gg , int sen) {
         JFrame input = new JFrame();
-        game.startGame();
-//        KML.setGame(game);
-//        MyThreadClock.moveKml(game, KML);
-        MyThreadClock.moveTime(game);
-        MyThreadClock.timeRun(game);
-        while(game.isRunning()) {
-            smartMove(game , gg);
+        String s ="";
+        s = JOptionPane.showInputDialog(null, "Please enter a Scenario number between 0-23");
+        int scenario=Integer.parseInt(s);
+        if(scenario < 0 || scenario > 23) {
+            JOptionPane.showMessageDialog(input, "The number that you entered isn't a Scenario number " );
         }
-        try {
-            //KML.save(sen + ".kml");
-            String info = game.toString();
-            System.out.println(info);
-            JSONObject obj = new JSONObject(info);
-            JSONObject GameServer =obj.getJSONObject("GameServer");
-            int grade = GameServer.getInt("grade");
-            JOptionPane.showMessageDialog(input, "the game is finished! \n"+ "your score is: " + grade);
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        else {
+            game_service game = Game_Server.getServer(scenario);
+            AutoGame Auto= new AutoGame (this);
+            Auto.AutoGame(game, scenario);
         }
     }
 
     /**
-     * This function is the smart move- she made a path for every robot by the shortestpath and shortspathdist
-     *
-     * @param game
-     * @param dg
-     */
-    private void smartMove(game_service game, DGraph dg) {
-        List<node_data> ListGr = new ArrayList<node_data>();
-        Graph_Algo ga = new Graph_Algo();
-        ga.init(dg);
-        try {
-            String info = game.toString();
-            JSONObject obj = new JSONObject(info);
-            JSONObject Robot =obj.getJSONObject("GameServer");
-            int amountRobot = Robot.getInt("robots");
-            int counter=0;
-            while ( counter < amountRobot) {
-                Robot ro = robots.get(counter);
-                ListGr = SetPath ( game,  dg, ro,  ga);
-                MoveRobot( game,  dg,  ro,  ga, ListGr);
-                counter++;
-            }
-        }
-        catch (JSONException e) {e.printStackTrace();}
-        // robot move
-        updateRobot(game , dg);
-        // fruit move if its eaten
-        upateFruits( game, dg);
-        paint();
-    }
-
-
-    private List<node_data> SetPath (game_service game, DGraph gg, Robot ro, Graph_Algo graphA) {
-        double min =Integer.MAX_VALUE , temp=0;
-        List<node_data> list = new ArrayList<>();
-        Set <Point3D> allFruits = fruits.keySet();
-        Fruit temp_f = new Fruit();
-        for (Point3D point3d : allFruits) {
-            Fruit fo = fruits.get(point3d);
-            temp = graphA.shortestPathDist(ro.getSrc(), fo.getSrc());
-            if ( temp < min && !fo.getVisited()) {
-                temp_f = fo;
-                min = temp;
-                fo.setVisited(true);//mark as visited
-                list = graphA.shortestPath(ro.getSrc(), fo.getSrc());
-                list.add(gg.getNode(fo.getDest()));
-            }
-
-
-        }
-        return list;
-
-    }
-
-    /**
-     * this function will move the robots by the path she gets
+     * help function to move the robot on the graph
      * @param game
      * @param gg
-     * @param ro
-     * @param graphA
-     * @param ListGr
      */
-    private void MoveRobot(game_service game, DGraph gg, Robot ro, Graph_Algo graphA, List<node_data> ListGr) {
-        Fruit temp_f = new Fruit();
-        temp_f.setVisited(true);
-        if (ListGr.size() != 0 ) {
-            ListGr.remove(0);
-        }
-        for (int j = 0; j < ListGr.size(); j++) {
-            node_data temp_node = ListGr.get(j);
-            int destGo = temp_node.getKey();
-            Point3D po = temp_node.getLocation();
-            ro.setPoint3D(po);
-            ro.setSrc( temp_node.getKey());
-            game.chooseNextEdge(ro.getId(), destGo);
-        }
-    }
-
     private void updateRobot(game_service game, DGraph gg) {
         robots.clear();
         for (String robo : game.getRobots()) {
-            Robot r=new Robot();
+            Robot r = new Robot();
             r.init(robo);
             int id = r.getId();
             robots.put(id, r);
         }
     }
 
+    /**
+     * help function to move the fruit if it eating
+     * @param game
+     * @param gg
+     */
     private void upateFruits(game_service game, DGraph gg) {
         fruits.clear();
         for (String  fruit : game.getFruits()) {
@@ -354,54 +173,49 @@ public class MyGameGui implements ActionListener  {
      * @param y
      */
     public void setXY(double x , double y) {
-        this.x=x;
-        this.y=y;
+        this.x = x;
+        this.y = y;
     }
 
     /**
      * This function moving the robots manualy by the user choice
-     * while the game is running she will change the robots ocation by the location the user entered
-     * and se will print the changes on the screen
+     * all the time i will change the location of the robot it will print the node he moved.
      * @param game
      */
-
     public void moveManual(game_service game) {
         game.startGame();
         MyThreadClock.timeRun(game);
         try {
             List<String> log = game.move();
-            Set <Integer> roboLoc = robots.keySet();
+            Set <Integer> robotLocation = robots.keySet();
             Robot r = new Robot();
             while (game.isRunning()) {
-                //re build the robots
                 updateRobot(game, dg);
-                // fruit move if its eaten
                 upateFruits(game, dg);
                 long t = game.timeToEnd();
-
                 if (!isRobot) {
-                    for (Integer roboL : roboLoc) {
+                    for (Integer roboL : robotLocation) {
                         r = robots.get(roboL);
                         Point3D p = r.getPoint3D();
-                        double disX=Math.pow((p.x()-this.x), 2);
-                        double disY=Math.pow((p.y()-this.y), 2);
-                        if(Math.sqrt(disY+disX)<=0.00025) {
-                            isRobot =true;
-                            this.x=0;
-                            this.y=0;
+                        double disX = Math.pow((p.x() - this.x), 2);
+                        double disY = Math.pow((p.y() - this.y), 2);
+                        if(Math.sqrt(disY + disX) <= 0.00025) {
+                            isRobot = true;
+                            this.x = 0;
+                            this.y = 0;
                             break;
                         }
                     }
                 }
                 else {
-                    node_data node = dg.getNode(r.getSrc());
-                    Collection <edge_data> edges = dg.getE(node.getKey());
-                    for (edge_data edge_data : edges) {
-                        node_data node_edge = dg.getNode(edge_data.getDest());
+                    node_data node = this.dg.getNode(r.getSrc());
+                    Collection <edge_data> c = this.dg.getE(node.getKey());
+                    for (edge_data edges : c) {
+                        node_data node_edge = dg.getNode(edges.getDest());
                         Point3D po = node_edge.getLocation();
-                        double disX=Math.pow((po.x()-this.x), 2);
-                        double disY=Math.pow((po.y()-this.y), 2);
-                        if(Math.sqrt(disY+disX)<=0.00025) {
+                        double disX = Math.pow((po.x()-this.x), 2);
+                        double disY = Math.pow((po.y()-this.y), 2);
+                        if(Math.sqrt(disY + disX) <= 0.00025) {
                             r.setPoint3D(po);
                             r.setDest(node_edge.getKey());
                             game.chooseNextEdge(r.getId(), node_edge.getKey());
@@ -410,7 +224,7 @@ public class MyGameGui implements ActionListener  {
                             this.y=0;
                             String robot_json = log.get(r.getId());
                             JSONObject line = new JSONObject(robot_json);
-                            System.out.println("Turn to node: "+node_edge.getKey()+"  time to end:"+(t/1000));
+                            System.out.println("Turn to node: "+ node_edge.getKey()+"  time to end:"+(t/1000));
                             break;
                         }
                     }
@@ -435,30 +249,10 @@ public class MyGameGui implements ActionListener  {
         }
     }
 
-    public void drawFunctions() {
-        StdDraw.setCanvasSize(1000, 1000);
-        int X_min = Integer.MIN_VALUE;
-        int X_max = Integer.MAX_VALUE;
-        int Y_min = Integer.MIN_VALUE;
-        int Y_max = Integer.MAX_VALUE;
-
-        // rescale the coordinate system
-        StdDraw.setXscale(  X_min, X_max);
-        StdDraw.setYscale(Y_min, Y_max);
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Menu");
-        menuBar.add(menu);
-
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-    }
 
 
     /**
-     * this function will paint the graph
+     * this function will paint the graph and also the fruit and the robots on the graph.
      */
     public void paint() {
         StdDraw.clear();
@@ -466,19 +260,19 @@ public class MyGameGui implements ActionListener  {
             Collection <node_data> c = this.dg.getV();
             for (node_data node : c) {
                 Point3D p = node.getLocation();
-                StdDraw.setPenColor(Color.ORANGE);
+                StdDraw.setPenColor(Color.RED);
                 StdDraw.filledCircle(p.x(), p.y(), 0.0001); //nodes in orange
                 StdDraw.setPenColor(Color.BLACK);
 
                 StdDraw.text(p.x(), p.y()+(p.y() * 0.000004) , (Integer.toString(node.getKey())));
                 Collection<edge_data> c2 = this.dg.getE(node.getKey());
                 for (edge_data Edge : c2) {
-                    if (Edge.getTag() ==100) {
+                    if (Edge.getTag() == 100) {
                         Edge.setTag(0);
-                        StdDraw.setPenColor(Color.RED);
+                        StdDraw.setPenColor(Color.YELLOW);
                     }
                     else {
-                        StdDraw.setPenColor(Color.BLUE);
+                        StdDraw.setPenColor(Color.DARK_GRAY);
                     }
                     node_data dest = dg.getNode(Edge.getDest());
                     Point3D p2 = dest.getLocation();
@@ -489,7 +283,6 @@ public class MyGameGui implements ActionListener  {
                         double y_place = ((((((p.y()+p2.y())/2)+p2.y())/2)+p2.y())/2);
                         StdDraw.filledCircle(x_place, y_place, 0.0001);
                         StdDraw.setPenColor(Color.BLUE);
-                        //cut the number to only 1 digit after the point
                         String toShort = Double.toString(Edge.getWeight());
                         int i=0;
                         while(i < toShort.length()) {
@@ -510,7 +303,9 @@ public class MyGameGui implements ActionListener  {
 
     /**
      * This function will paint the fruit on the screen by pass over the
-     * fruit location .
+     * fruit location.
+     * if the type is -1 it will print banana.
+     * if the type is 1 it will print apple.
      */
     public void paintFruit() {
         if ( this.fruits != null ) {
@@ -520,19 +315,17 @@ public class MyGameGui implements ActionListener  {
                 if (fru.getType() == -1) {
                     StdDraw.setPenColor(Color.RED);
                     StdDraw.picture(p3.x(), p3.y(), "data/banana.png", 0.0006, 0.0004);
-                    //					StdDrawGame.filledCircle(p3.x(), p3.y(), 0.00015);
                 }
                 else {
                     StdDraw.setPenColor(Color.CYAN);
                     StdDraw.picture(p3.x(), p3.y(), "data/apple.png", 0.0006, 0.0004);
-                    //					StdDrawGame.filledCircle(p3.x(), p3.y(), 0.00015);
                 }
             }
         }
     }
 
     /**
-     * This function paint the robots by
+     * paint robots
      */
     public void paintRobot() {
         if(this.robots!=null) {
@@ -542,15 +335,17 @@ public class MyGameGui implements ActionListener  {
                 Point3D p = robo.getPoint3D();
                 StdDraw.setPenColor(Color.GREEN);
                 StdDraw.picture(p.x(), p.y(), "data/robot.png", 0.0008, 0.0004);
-                //				StdDrawGame.picture(x, Y_max, filename, scaledWidth, scaledHeight);
-                //				StdDrawGame.filledCircle(p.x(), p.y(), 0.00025);
             }
 
         }
     }
 
+
+    /**
+     * init the gui window and the kml with the graph.
+     */
     public void initGUI() {
-        StdDraw.setCanvasSize(800, 600);
+        StdDraw.setCanvasSize(800, 700);
         StdDraw.enableDoubleBuffering();
         double X_min = Integer.MAX_VALUE;
         double X_max = Integer.MIN_VALUE;
@@ -559,8 +354,8 @@ public class MyGameGui implements ActionListener  {
 
         // rescale the coordinate system
         if (dg != null) {
-//            KML = new KML_Logger(dg);
-//            KML.kml_Graph();
+            KML = new KML_Logger(dg);
+            KML.kml_Graph();
             Collection<node_data> nodes = dg.getV();
             for(node_data node: nodes) {
                 if(node.getLocation().x() > X_max) {
@@ -575,7 +370,6 @@ public class MyGameGui implements ActionListener  {
                 if(node.getLocation().y() < Y_min) {
                     Y_min = (node.getLocation().y());
                 }
-
             }
         }
         StdDraw.setXscale(X_min, X_max);

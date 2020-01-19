@@ -19,6 +19,9 @@ public class Graph_Algo implements graph_algorithms,Serializable {
     public Graph_Algo(){
         this.GraphAlgo = new DGraph();
     }
+    public Graph_Algo(graph graph) {
+        this.GraphAlgo=graph;
+    }
 
     @Override
     public void init(graph g) {
@@ -224,6 +227,8 @@ public class Graph_Algo implements graph_algorithms,Serializable {
         g.getNode(src).setWeight(0);
         for (node_data nodes : c) {
             heap.insert(nodes);
+            NodeData n = (NodeData)nodes;
+            n.setVisited(false);
         }
         while (heap.getArray().size() != 0) {
             NodeData node = (NodeData) heap.extractMin();

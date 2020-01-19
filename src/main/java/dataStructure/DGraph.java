@@ -179,11 +179,11 @@ public class DGraph implements graph, Serializable {
                 location = new Point3D(locationstring);
                 this.addNode(new NodeData(idNode,location));
             }
-            for (int i = 0; i <edges.length() ; i++) {
+            for (int i = 0; i < edges.length() ; i++) {
                 src = edges.getJSONObject(i).getInt("src");
                 dest = edges.getJSONObject(i).getInt("dest");
                 weight = edges.getJSONObject(i).getDouble("w");
-                connect(src, dest, weight);
+                this.connect(src, dest, weight);
             }
         }
         catch(Exception JsonProb){
