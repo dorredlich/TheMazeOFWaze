@@ -42,7 +42,7 @@ public class Fruit {
      * @param dg - this represent the graph
      */
     public Fruit (int t , int v , Point3D p ,  DGraph dg) {
-        this.graph=dg;
+        this.graph= dg;
         this.edge = edge;
         this.value =v;
         this.type = t;
@@ -88,18 +88,18 @@ public class Fruit {
             String k = "";
             JSONObject obj = new JSONObject(s);
             JSONObject Fruits2 =obj.getJSONObject("Fruit");
-            String point=(String) Fruits2.get("pos");
-            for (int j = 0; j < point.length(); j++) {
-                if (point.charAt(j) != ',') {
-                    k+=point.charAt(j);
-                    if (counter == 2 && j == point.length()-1) {
+            String location = (String) Fruits2.get("pos");
+            for (int j = 0; j < location.length(); j++) {
+                if (location.charAt(j) != ',') {
+                    k += location.charAt(j);
+                    if (counter == 2 && j == location.length()-1) {
                         z= Double.parseDouble(k);
                         counter=0;
                         k="";
                     }
                 }
                 else {
-                    if (counter==0) {
+                    if (counter== 0) {
                         x= Double.parseDouble(k);
                         counter++;
                         k="";
@@ -114,50 +114,30 @@ public class Fruit {
             Point3D p = new Point3D(x,y,z);
             this.value = Fruits2.getInt("value");
             this.type =  Fruits2.getInt("type");
-            this.location =new Point3D(p);
+            this.location = new Point3D(p);
         }
         catch(Exception e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * this function return which node the robot should move, to the closest fruit.
-     * @param g the graph we working on
-     * @param fruit the fruit that we want to check.
-     * @return the node id we need go to.
-     */
-    public edge_data findFruitPlace(graph g, Fruit fruit) {
-        Collection<node_data> gNodes = g.getV();
-        for(node_data node: gNodes){
-            Collection<edge_data> edges =g.getE(node.getKey());
-            if(edges!=null){
-                for (edge_data edge:edges) {
-                    if(isOnEdge(g,edge,fruit)){
-                        System.out.println("edge is:" + edge);
-                        return edge;
-                    }
+    public void findFruitPlace(graph gg , Fruit f) {
+        Point3D p = f.getPoint3D();
+        Collection <node_data> Nodes = gg.getV();
+        for (node_data node_data : Nodes) {
+            Collection<edge_data> neighbors=gg.getE(node_data.getKey());
+            for (edge_data edge_data : neighbors) {
+                double dis1 = distance(node_data.getLocation().x() , node_data.getLocation().y(), p.x() , p.y());
+                int dest = edge_data.getDest();
+                double dis2 = distance(gg.getNode(dest).getLocation().x() , gg.getNode(dest).getLocation().y() ,p.x() , p.y());
+                double dis_All = distance(node_data.getLocation().x() , node_data.getLocation().y() ,gg.getNode(dest).getLocation().x() , gg.getNode(dest).getLocation().y() );
+                if (Math.abs((dis1+dis2) - dis_All)<= EPSILON) {
+                    f.setDest(dest);
+                    f.setSrc(node_data.getKey());
+                    f.setEdge(edge_data);
                 }
             }
         }
-        return null;
-    }
-
-    /**
-     * this function check if the fruit on specific edge.
-     * @param g the graph we are workin on
-     * @param edge the edge we want to check if the fruit on it.
-     * @param f the fruit
-     * @return yes if the fruit on the edge false if not.
-     */
-    private boolean isOnEdge(dataStructure.graph g, edge_data edge, Fruit f){
-        node_data src = g.getNode(edge.getSrc());
-        node_data dst = g.getNode(edge.getDest());
-        double first = Math.sqrt(Math.pow(src.getLocation().x()-f.location.x(),2)+Math.pow(src.getLocation().y()-f.location.y(),2));
-        double second = Math.sqrt(Math.pow(dst.getLocation().x()-f.location.x(),2)+Math.pow(dst.getLocation().y()-f.location.y(),2));
-        double third = Math.sqrt(Math.pow(src.getLocation().x()-dst.getLocation().x(),2)+Math.pow(src.getLocation().y()-dst.getLocation().y(),2));
-        if (first + second > third -EPSILON && first+second<third+EPSILON) return true;
-        return false;
     }
 
 

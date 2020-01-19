@@ -25,6 +25,7 @@ package utils;
  *
  ******************************************************************************/
 
+import gameClient.AutoGame;
 import gameClient.MyGameGui;
 
 import java.awt.BasicStroke;
@@ -630,6 +631,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     // set of key codes currently pressed down
     private static TreeSet<Integer> keysDown = new TreeSet<Integer>();
     static MyGameGui myGameGui;
+    static AutoGame auto;
 
     // singleton pattern: client can't instantiate
     private StdDraw() { }
@@ -1676,6 +1678,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     public static void setGuiGraph(MyGameGui Gui) {
         myGameGui = Gui;
     }
+
 
 
     /**

@@ -40,7 +40,7 @@ public class Robot {
      * @param p - point of the location
      */
     public Robot (int t , int v , Point3D p) {
-        this.value =value;
+        this.value =v;
         this.point =p;
     }
 
@@ -115,18 +115,4 @@ public class Robot {
 
     }
 
-
-    /**
-     * boolean that will mark if the robot is done the path that was made for him
-     * @param dest
-     * @return
-     */
-    public boolean IsDone(node_data dest) {
-        boolean IsDone=false;
-        if(this.getPoint3D()==dest.getLocation()) {
-            IsDone=true;
-        }
-        return IsDone;
-
-    }
 }
