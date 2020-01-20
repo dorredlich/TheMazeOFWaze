@@ -24,12 +24,12 @@ public class Robot {
     }
 
     public Robot(Point3D p,int value,int id,int src,int dest,int speed) {
-        this.value =0;
+        this.value =value;
         this.id =id;
         this.src = src;
         this.dest =dest;
         this.speed =speed;
-        this.point = point;
+        this.point = p;
     }
 
 

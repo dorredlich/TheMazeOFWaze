@@ -23,37 +23,34 @@ public class MyGameGui  {
     Hashtable<Point3D, Fruit> fruits;
     Hashtable<Integer, Robot> robots;
     private static final long serialVersionUID = 6128157318970002904L;
-    public double X_min = Integer.MAX_VALUE;
-    public double X_max = Integer.MIN_VALUE;
-    public double Y_min = Integer.MAX_VALUE;
-    public double Y_max = Integer.MIN_VALUE;
     double x;
     double y;
+    public int scenario;
     boolean isRobot = false;
-    public KML_Logger KML;
+    public KML_Loger KML;
 
 
     public MyGameGui(){
+        this.game = Game_Server.getServer(this.scenario);
         this.dg =null;
         initGUI();
     }
 
+    /**
+     * chooseing thes scenario of the game
+     */
+    private void chooseScenario() {
+        JFrame level = new JFrame();
+        String scenario_num = JOptionPane.showInputDialog(level, "insert a level 0 - 23:");
+        this.scenario = Integer.parseInt(scenario_num);
+    }
 
     /**
      * This function is play the manual choice and send it to move manual
      */
     public  void PlayManual() {
         try {
-            JFrame input = new JFrame();
-            String s ="";
-            s = JOptionPane.showInputDialog(
-                    null, "Please enter a Scenario number between 0-23");
-            int scenario = Integer.parseInt(s);
-            if(scenario < 0 || scenario > 23) {
-                JOptionPane.showMessageDialog(input, "The number that you entered isn't a Scenario number " );
-            }
-            else {
-                game_service game = Game_Server.getServer(scenario);
+                chooseScenario();
                 String g = game.getGraph();
                 DGraph dg2 = new DGraph();
                 dg2.init(g);
@@ -109,7 +106,7 @@ public class MyGameGui  {
                 }
                 initGUI();
                 moveManual(game);
-            }
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -121,19 +118,12 @@ public class MyGameGui  {
      */
     public void Playautomatic() {
 
-        JFrame input = new JFrame();
-        String s ="";
-        s = JOptionPane.showInputDialog(null, "Please enter a Scenario number between 0-23");
-        int scenario=Integer.parseInt(s);
-        if(scenario < 0 || scenario > 23) {
-            JOptionPane.showMessageDialog(input, "The number that you entered isn't a Scenario number " );
-        }
-        else {
+            chooseScenario();
             game_service game = Game_Server.getServer(scenario);
             AutoGame Auto= new AutoGame (this);
             Auto.AutoGame(game, scenario);
-        }
     }
+
 
     /**
      * help function to move the robot on the graph
@@ -308,17 +298,23 @@ public class MyGameGui  {
      * if the type is 1 it will print apple.
      */
     public void paintFruit() {
-        if ( this.fruits != null ) {
-            Set <Point3D> set = fruits.keySet();
+        if (this.fruits != null) {
+            Set<Point3D> set = fruits.keySet();
             for (Point3D p3 : set) {
                 Fruit fru = fruits.get(p3);
                 if (fru.getType() == -1) {
                     StdDraw.setPenColor(Color.RED);
                     StdDraw.picture(p3.x(), p3.y(), "data/banana.png", 0.0006, 0.0004);
-                }
-                else {
+                } else {
                     StdDraw.setPenColor(Color.CYAN);
                     StdDraw.picture(p3.x(), p3.y(), "data/apple.png", 0.0006, 0.0004);
+                    if (fru != null) {
+                        if (fru.getType() == -1) {
+                            KML_Loger.createPlacemark(fru.getLocation().x(), fru.getLocation().y(), "banana");
+                        } else {
+                            KML_Loger.createPlacemark(fru.getLocation().x(), fru.getLocation().y(), "apple");
+                        }
+                    }
                 }
             }
         }
@@ -328,15 +324,21 @@ public class MyGameGui  {
      * paint robots
      */
     public void paintRobot() {
-        if(this.robots!=null) {
-            Set <Integer> set = robots.keySet();
+        if (this.robots != null) {
+            Set<Integer> set = robots.keySet();
             for (Integer robot : set) {
-                Robot robo = robots.get(robot);
-                Point3D p = robo.getPoint3D();
-                StdDraw.setPenColor(Color.GREEN);
-                StdDraw.picture(p.x(), p.y(), "data/robot.png", 0.0008, 0.0004);
-            }
+                try {
+                    Robot robo = robots.get(robot);
+                    Point3D p = robo.getPoint3D();
+                    StdDraw.setPenColor(Color.GREEN);
+                    StdDraw.picture(p.x(), p.y(), "data/robot.png", 0.0008, 0.0004);
+                    if (p != null)
+                        KML_Loger.createPlacemark(p.x(), p.y(), "ski");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
+            }
         }
     }
 
@@ -352,10 +354,7 @@ public class MyGameGui  {
         double Y_min = Integer.MAX_VALUE;
         double Y_max = Integer.MIN_VALUE;
 
-        // rescale the coordinate system
         if (dg != null) {
-            KML = new KML_Logger(dg);
-            KML.kml_Graph();
             Collection<node_data> nodes = dg.getV();
             for(node_data node: nodes) {
                 if(node.getLocation().x() > X_max) {
@@ -380,5 +379,6 @@ public class MyGameGui  {
 
     public static void main(String[] args) {
         MyGameGui gg = new MyGameGui();
+
     }
 }

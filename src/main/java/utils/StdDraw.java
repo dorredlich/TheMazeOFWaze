@@ -25,8 +25,11 @@ package utils;
  *
  ******************************************************************************/
 
+import Server.game_service;
 import gameClient.AutoGame;
+import gameClient.KML_Loger;
 import gameClient.MyGameGui;
+import gameClient.MyThreadClock;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -68,13 +71,7 @@ import java.util.TreeSet;
 import java.util.NoSuchElementException;
 import javax.imageio.ImageIO;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 
 /**
  *  The {@code StdDraw} class provides a basic capability for
@@ -631,7 +628,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     // set of key codes currently pressed down
     private static TreeSet<Integer> keysDown = new TreeSet<Integer>();
     static MyGameGui myGameGui;
-    static AutoGame auto;
+    public static AutoGame auto;
 
     // singleton pattern: client can't instantiate
     private StdDraw() { }
@@ -719,14 +716,21 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     private static JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu1 = new JMenu("Play");
+        JMenu file = new JMenu("File"); // Bottom
 
+        menuBar.add(file);
         menuBar.add(menu1);
         JMenuItem menuItem1 = new JMenuItem("Play automatic");
         JMenuItem menuItem2 = new JMenuItem("Play Manual");
+        JMenuItem save = new JMenuItem("Save as KML");
+        save.addActionListener(std);
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+
         menuItem1.addActionListener(std);
         menuItem2.addActionListener(std);
         menu1.add(menuItem1);
         menu1.add(menuItem2);
+        file.add(save);
 
         return menuBar;
     }
@@ -1680,6 +1684,8 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     }
 
 
+    public static MyThreadClock clock;
+    game_service game;
 
     /**
      * This method cannot be called directly.
@@ -1694,11 +1700,16 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 //      }
 
         String str = e.getActionCommand();
-        if ( str.equals("Play automatic")){
+        if (str.equals("Play automatic")) {
             threadPlayAuto();
         }
-        else if (str.equals("Play Manual") ) {
+        if (str.equals("Play Manual")) {
             threadPlatManu();
+        }
+        if (str.equals("Save as KML")) {
+                    KML_Loger.createKMLFile(myGameGui.scenario);
+                    JFrame saved = new JFrame();
+                    JOptionPane.showMessageDialog(saved, "your game is saved!");
         }
     }
 

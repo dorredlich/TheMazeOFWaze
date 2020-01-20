@@ -109,8 +109,6 @@ public class AutoGame {
     public void startGame(game_service game , DGraph gg , int sen) {
         JFrame input = new JFrame();
         game.startGame();
-        myGame.KML.setGameS(game);
-       MyThreadClock.moveKml(game, myGame.KML);
         MyThreadClock.timeRun(game);
         Long timeB = game.timeToEnd();
         while(game.isRunning()) {
@@ -122,7 +120,6 @@ public class AutoGame {
             playSmart(game , gg);
         }
         try {
-//            myGame.KML.save(sen + ".kml");
             String info = game.toString();
             System.out.println(info);
             JSONObject obj = new JSONObject(info);
@@ -165,7 +162,9 @@ public class AutoGame {
 
 
     /**
-     * getting list of nodes of the shortestPath from the robot to a every location of the fruits.
+     *  This function set the path for the robot by pass all the fruit and check which
+     * 	fruit in the closest fruit by the shortestpathdist (graph_algo) after this the function
+     * 	will set the closest fruit as visited so the other robots won't go there
      * @param game
      * @param gg
      * @param ro the robot to check the shortestPath to the fruit.
@@ -179,15 +178,19 @@ public class AutoGame {
         Fruit temp_f = new Fruit();
         for (Point3D point3d : allFruits) {
             Fruit fo = myGame.fruits.get(point3d);
-            System.out.println(fo.getDest());
-            System.out.println(fo.getSrc());
-            temp = graphA.shortestPathDist(ro.getSrc(), fo.getDest());
-            if (temp < min && !fo.getVisited()) {
-                temp_f = fo;
-                min = temp;
-                fo.setVisited(true);
-                list = graphA.shortestPath(ro.getSrc(), fo.getDest());
-                list.add(gg.getNode(fo.getSrc()));
+            try {
+                if (ro.getSrc() == fo.getDest())
+                    continue;
+                temp = graphA.shortestPathDist(ro.getSrc(), fo.getDest());
+                if (temp < min && !fo.getVisited()) {
+                    temp_f = fo;
+                    min = temp;
+                    fo.setVisited(true);
+                    list = graphA.shortestPath(ro.getSrc(), fo.getDest());
+                    list.add(gg.getNode(fo.getSrc()));
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
         }
         return list;
