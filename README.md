@@ -21,3 +21,10 @@ The maual game:
 Ths manual game is choosen by the user choice, by clicking on the screen. The user is asked to click first on the red car he wants to move and only after click on the point he want the car to go to .
 
 Notice: the user can click only on robot first and then to the next node to move.
+
+Code Information:
+
+Fruit Class - reprasent all the init and constructor to find the palce of the fruit on the edge.
+Robot Class - reprasent all the init and constructor for the robot.
+MyThreadClock - reprasent the to run with sleep.
+
