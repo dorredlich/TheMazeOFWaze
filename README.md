@@ -1,6 +1,6 @@
 # The Maze of The Waze project
 
-In this project we made our one version for "TheMazeOfWaze" game. the robot should take as many fruit as he can (there isn't limit of seats) so that he will get the largest score in the game.
+In this project I made our one version for "TheMazeOfWaze" game. the robot should take as many fruit as he can (there isn't limit of seats) so that he will get the largest score in the game.
 
 Int this project I used diercted illustrated graphs by the DGraph,every node_data in the graph is represent a datum-point in Ariel (I can see the point in 'Google Earth' api) .I used 23 scenario as a game level for the user, the user can change them manualy and decide if to use manual or automatic game. In every scenarion there is a diffrent num of robot, and diffrend amount of fruits . Every game is 60 sec.
 
