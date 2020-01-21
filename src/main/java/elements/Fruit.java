@@ -121,6 +121,14 @@ public class Fruit {
         }
     }
 
+    /**
+     * This function set the dest, src and edge
+     * the function pass all the nodes and check for every node if the dest between the 2 nodes is
+     * equals to the dest between the first node to the fruit and form the fruit to the next node by the help of the distance function.
+     * if it does she will set the edge of the fruit to be the edge between them also the src and dest.
+     * @param gg the graph to check
+     * @param f the fruit to find his place
+     */
     public void findFruitPlace(graph gg , Fruit f) {
         Point3D p = f.getPoint3D();
         Collection <node_data> Nodes = gg.getV();
@@ -141,6 +149,14 @@ public class Fruit {
     }
 
 
+    /**
+     * help funtion to fint the distance between to points.
+     * @param x
+     * @param y
+     * @param x2
+     * @param y2
+     * @return
+     */
     private double distance(double x, double y, double x2, double y2) {
         double x_dis = Math.pow((x-x2), 2);
         double y_dis = Math.pow((y-y2), 2);

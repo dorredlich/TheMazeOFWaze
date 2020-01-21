@@ -17,6 +17,11 @@ import java.util.*;
 import java.util.List;
 
 
+/**
+ *  This class represents the MyGameGui for the client.
+ *   Ex3 - Do edit this class.
+ *  @author Dor Redlich
+ */
 public class MyGameGui  {
     game_service game;
     public  DGraph dg = new DGraph();

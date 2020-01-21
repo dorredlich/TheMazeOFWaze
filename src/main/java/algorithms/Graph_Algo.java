@@ -10,7 +10,7 @@ import org.w3c.dom.events.EventException;
 /**
  * This empty class represents the set of graph-theory algorithms
  * which should be implemented as part of Ex2 - Do edit this class.
- * @author
+ * @author Dor Redlich
  *
  */
 public class Graph_Algo implements graph_algorithms,Serializable {
