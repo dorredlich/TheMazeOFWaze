@@ -21,18 +21,15 @@ MyGameGui class represent a graphical game. the class allowing to choose a scena
 KML_loger class create a KML file to the automatic game from the class "MyGameGui". the name of the file will be the scenario number of the game, and the file will save in a folder call "KML_games". SimpleGameClient class represents a simple example for using the GameServer API.
 
 Her is a picture of the end of a game:
-
 ![Game](https://user-images.githubusercontent.com/57295881/72775306-86fe9600-3c16-11ea-9a9e-2e473d57d538.PNG)
 
 The maual game:
 
-Ths manual game is choosen by the user choice, by clicking on the screen. The user is asked to click first on the red car he wants to move and only after click on the point he want the car to go to .
-
+Ths manual game is choosen by the user choice, by clicking on the screen. The user is asked to click first on the red car he wants to move and only after click on the point he want the car to go to.
 Notice: the user can click only on robot first and then to the next node to move.
 
 Code Information:
-
-Fruit Class - reprasent all the init and constructor to find the palce of the fruit on the edge.
-Robot Class - reprasent all the init and constructor for the robot.
-MyThreadClock - reprasent the to run with sleep.
+* Fruit Class - reprasent all the init and constructor to find the palce of the fruit on the edge.
+* Robot Class - reprasent all the init and constructor for the robot.
+* MyThreadClock - reprasent the to run with sleep.
 
