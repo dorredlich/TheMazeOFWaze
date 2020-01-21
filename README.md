@@ -10,7 +10,6 @@ Her is a picture of choose the Scenario of the game:
 
 ![First](https://user-images.githubusercontent.com/57295881/72775177-093a8a80-3c16-11ea-9dbc-f4b1178ed92e.PNG)
 
-
 GameClient:
 
 AutoGame class:
@@ -21,6 +20,9 @@ MyGameGui class represent a graphical game. the class allowing to choose a scena
 
 KML_loger class create a KML file to the automatic game from the class "MyGameGui". the name of the file will be the scenario number of the game, and the file will save in a folder call "KML_games". SimpleGameClient class represents a simple example for using the GameServer API.
 
+Her is a picture of the end of a game:
+
+![Game](https://user-images.githubusercontent.com/57295881/72775306-86fe9600-3c16-11ea-9a9e-2e473d57d538.PNG)
 
 The maual game:
 
