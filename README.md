@@ -6,6 +6,11 @@ Int this project I used diercted illustrated graphs by the DGraph,every node_dat
 
 In the manual game the user will click on the robot and will move her to the next point by his choice by clicking the next point. Int the automatic game I made the efficient game so that the user will get the largest amount of points by Collect fruits in the way.
 
+Her is a picture of choose the Scenario of the game:
+
+![First](https://user-images.githubusercontent.com/57295881/72775177-093a8a80-3c16-11ea-9dbc-f4b1178ed92e.PNG)
+
+
 GameClient:
 
 AutoGame class:
@@ -15,6 +20,7 @@ represent an automatic game. the class allowing an effective automatic game, by 
 MyGameGui class represent a graphical game. the class allowing to choose a scenario to the game, place the robots and play the game manually or watch an automatic mode game. in addition, the time left to the end of the game. the manually game allow to play the game by mouse press (on a robot, and the on node on the graph).
 
 KML_loger class create a KML file to the automatic game from the class "MyGameGui". the name of the file will be the scenario number of the game, and the file will save in a folder call "KML_games". SimpleGameClient class represents a simple example for using the GameServer API.
+
 
 The maual game:
 
