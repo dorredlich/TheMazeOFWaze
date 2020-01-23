@@ -1,6 +1,5 @@
 package elements;
 
-import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
@@ -11,27 +10,27 @@ import java.util.Collection;
 
 public class Fruit {
     static double EPSILON = 0.0000001;
-    DGraph graph;
+    graph g;
     edge_data edge;
     int type;
     int value;
     Point3D location;
     int dest;
     int src;
-    boolean isVisid;
+    boolean isVisit;
 
     /**
      *This function is the default counstrctor
      */
     public Fruit () {
-        this.graph=graph;
+        this.g = g;
         this.edge = edge;
         this.type = type;
         this.location = location;
         this.value = value;
         this.src = src;
         this.dest = dest;
-        this.isVisid = isVisid;
+        this.isVisit = isVisit;
     }
 
     /**
@@ -41,15 +40,15 @@ public class Fruit {
      * @param p - represent the location f p
      * @param dg - this represent the graph
      */
-    public Fruit (int t , int v , Point3D p ,  DGraph dg) {
-        this.graph= dg;
+    public Fruit (int t , int v , Point3D p ,  graph dg) {
+        this.g = dg;
         this.edge = edge;
         this.value =v;
         this.type = t;
         this.location = new Point3D(p);
         this.src = src;
         this.dest = dest;
-        this.isVisid = isVisid;
+        this.isVisit = isVisit;
     }
 
     public Point3D getPoint3D () { return this.location; }
@@ -60,7 +59,7 @@ public class Fruit {
 
     public int getSrc () { return this.src; }
 
-    public void setSrc(int Src) { this.src =Src; }
+    public void setSrc(int Src) { this.src = Src; }
 
     public int getDest() { return this.dest; }
 
@@ -72,9 +71,9 @@ public class Fruit {
 
     public Point3D getLocation() { return this.location;}
 
-    public boolean getVisited() { return this.isVisid; }
+    public boolean getVisited() { return this.isVisit; }
 
-    public void setVisited(boolean Visited) { this.isVisid =Visited; }
+    public void setVisited(boolean Visited) { this.isVisit = Visited; }
 
     /**
      * This function init a fruit from the string s by reading from the json

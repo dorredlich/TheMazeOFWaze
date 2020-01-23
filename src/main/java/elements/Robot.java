@@ -4,6 +4,8 @@ import dataStructure.node_data;
 import org.json.JSONObject;
 import utils.Point3D;
 
+import java.util.List;
+
 public class Robot {
     int value;
     int id;
@@ -11,6 +13,8 @@ public class Robot {
     int dest;
     int speed;
     Point3D point;
+    List<node_data> way;
+    boolean isFinish;
 
 
 
@@ -21,6 +25,7 @@ public class Robot {
         this.dest = dest;
         this.speed = speed;
         this.point = point;
+        this.isFinish = true;
     }
 
     public Robot(Point3D p,int value,int id,int src,int dest,int speed) {
@@ -67,6 +72,13 @@ public class Robot {
 
     public void setDest(int Dest) { this.dest = Dest; }
 
+    public boolean isFinish() { return this.isFinish; }
+
+    public void setFinish(boolean finish) { this.isFinish = finish;}
+
+    public List<node_data> getWay() { return this.way;}
+
+    public void setWay(List<node_data> way) {this.way = way;}
 
     /**
      * This function gets string s and init from her the robot all the information she needs,
@@ -112,6 +124,23 @@ public class Robot {
         catch(Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public boolean IsDone(node_data src) {
+        boolean IsDone=false;
+        double x = distans(this.getPoint3D().x(), this.getPoint3D().y(), src.getLocation().x(), src.getLocation().y());
+        if(x<=0.000001) {
+            IsDone=true;
+        }
+        return IsDone;
+    }
+
+    private double distans(double x, double y, double x2, double y2) {
+        double x_dis = Math.pow((x-x2), 2);
+        double y_dis = Math.pow((y-y2), 2);
+        double dis = Math.sqrt((x_dis + y_dis));
+        return dis;
 
     }
 

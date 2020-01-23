@@ -29,11 +29,10 @@ import Server.game_service;
 import gameClient.AutoGame;
 import gameClient.KML_Loger;
 import gameClient.MyGameGui;
-import gameClient.MyThreadClock;
+
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -717,12 +716,16 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         JMenuBar menuBar = new JMenuBar();
         JMenu menu1 = new JMenu("Play");
         JMenu file = new JMenu("File"); // Bottom
+        JMenu resultInfo = new JMenu("ResultInfo");
 
+        menuBar.add(resultInfo);
         menuBar.add(file);
         menuBar.add(menu1);
         JMenuItem menuItem1 = new JMenuItem("Play automatic");
         JMenuItem menuItem2 = new JMenuItem("Play Manual");
         JMenuItem save = new JMenuItem("Save as KML");
+        JMenuItem info = new JMenuItem("Results");
+        info.addActionListener(std);
         save.addActionListener(std);
         save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 
@@ -731,6 +734,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
         menu1.add(menuItem1);
         menu1.add(menuItem2);
         file.add(save);
+        resultInfo.add(info);
 
         return menuBar;
     }
@@ -1684,7 +1688,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
     }
 
 
-    public static MyThreadClock clock;
+
     game_service game;
 
     /**
@@ -1710,6 +1714,9 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
                     KML_Loger.createKMLFile(myGameGui.scenario);
                     JFrame saved = new JFrame();
                     JOptionPane.showMessageDialog(saved, "your game is saved!");
+        }
+        if(str.equals("Results")){
+            myGameGui.MyResultGUI();
         }
     }
 
