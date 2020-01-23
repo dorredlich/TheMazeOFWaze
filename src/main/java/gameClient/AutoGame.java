@@ -1,4 +1,7 @@
 package gameClient;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.*;
 
 import dataStructure.node_data;
@@ -131,6 +134,15 @@ public class AutoGame {
         catch (Exception e) {
             e.printStackTrace();
         }
+        String results = this.myGame.toString();
+        BufferedReader objReader = null;
+        try {
+            objReader = new BufferedReader(new FileReader("data/" + sen + ".kml"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String remark = objReader.toString();
+        game.sendKML(remark);
     }
 
     /**

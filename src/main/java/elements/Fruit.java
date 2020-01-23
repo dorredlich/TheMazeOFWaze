@@ -11,7 +11,7 @@ import java.util.Collection;
 
 public class Fruit {
     static double EPSILON = 0.0000001;
-    DGraph graph;
+    graph graph;
     edge_data edge;
     int type;
     int value;
@@ -41,7 +41,7 @@ public class Fruit {
      * @param p - represent the location f p
      * @param dg - this represent the graph
      */
-    public Fruit (int t , int v , Point3D p ,  DGraph dg) {
+    public Fruit (int t , int v , Point3D p ,  graph dg) {
         this.graph= dg;
         this.edge = edge;
         this.value =v;
