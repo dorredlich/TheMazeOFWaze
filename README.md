@@ -33,3 +33,11 @@ Code Information:
 * Robot Class - reprasent all the init and constructor for the robot.
 * MyThreadClock - reprasent the to run with sleep.
 
+The game maze of waze:
+
+the final project is about passing 11 phases that inculde: {0,1,3,5,9,11,13,16,19,20,23} that you can pass only if you get a number of grades high and with the least of moves.
+
+that is some of my data base table:
+
+
+
