@@ -1,6 +1,10 @@
 package gameClient;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.*;
 
+import Server.Game_Server;
 import dataStructure.node_data;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +23,7 @@ import javax.swing.*;
 public class AutoGame {
     MyGameGui myGame;
 
-    public AutoGame(MyGameGui gui){
+    public AutoGame(MyGameGui gui) {
         this.myGame = gui;
     }
 
@@ -112,7 +116,7 @@ public class AutoGame {
         MyThreadClock.timeRun(game);
         Long timeB = game.timeToEnd();
         while(game.isRunning()) {
-            if(timeB-game.timeToEnd() > 70)
+            if(timeB-game.timeToEnd() > 100)
             {
                 game.move();
                 timeB = game.timeToEnd();
@@ -123,7 +127,7 @@ public class AutoGame {
             String info = game.toString();
             System.out.println(info);
             JSONObject obj = new JSONObject(info);
-            JSONObject GameServer =obj.getJSONObject("GameServer");
+            JSONObject GameServer = obj.getJSONObject("GameServer");
             int grade = GameServer.getInt("grade");
             JOptionPane.showMessageDialog(input, "the game is finished! \n"+ "your score is: " + grade);
 
@@ -131,6 +135,16 @@ public class AutoGame {
         catch (Exception e) {
             e.printStackTrace();
         }
+        String results = this.myGame.toString();
+        BufferedReader objReader = null;
+        try {
+            objReader = new BufferedReader(new FileReader("data/" + sen + ".kml"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String remark = objReader.toString();
+        game.sendKML(remark);
+        System.out.println("Game Over: " + results);
     }
 
     /**
@@ -181,8 +195,10 @@ public class AutoGame {
             try {
                 if (ro.getSrc() == fo.getDest())
                     continue;
+                if(ro.getSrc() == 9 && ro.getDest() == 10)
+                    continue;
                 temp = graphA.shortestPathDist(ro.getSrc(), fo.getDest());
-                if (temp < min && !fo.getVisited()) {
+                if (temp <= min && !fo.getVisited()) {
                     temp_f = fo;
                     min = temp;
                     fo.setVisited(true);

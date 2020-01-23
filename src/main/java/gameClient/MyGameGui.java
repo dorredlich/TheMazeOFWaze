@@ -13,8 +13,18 @@ import utils.StdDraw;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
 import java.util.*;
 import java.util.List;
+import gameClient.SimpleDB;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import static gameClient.SimpleDB.*;
 
 
 /**
@@ -22,20 +32,28 @@ import java.util.List;
  *   Ex3 - Do edit this class.
  *  @author Dor Redlich
  */
-public class MyGameGui  {
+public class MyGameGui {
+    public static final String jdbcUrl="jdbc:mysql://db-mysql-ams3-67328-do-user-4468260-0.db.ondigitalocean.com:25060/oop?useUnicode=yes&characterEncoding=UTF-8&useSSL=false";
+    public static final String jdbcUser="student";
+    public static final String jdbcUserPassword="OOP2020student";
     game_service game;
     public  DGraph dg = new DGraph();
     Hashtable<Point3D, Fruit> fruits;
     Hashtable<Integer, Robot> robots;
     private static final long serialVersionUID = 6128157318970002904L;
+    public double X_min = Integer.MAX_VALUE;
+    public double X_max = Integer.MIN_VALUE;
+    public double Y_min = Integer.MAX_VALUE;
+    public double Y_max = Integer.MIN_VALUE;
     double x;
     double y;
     public int scenario;
     boolean isRobot = false;
-    public KML_Loger KML;
+
 
 
     public MyGameGui(){
+        Game_Server.login(206282170);
         this.game = Game_Server.getServer(this.scenario);
         this.dg =null;
         initGUI();
@@ -48,6 +66,77 @@ public class MyGameGui  {
         JFrame level = new JFrame();
         String scenario_num = JOptionPane.showInputDialog(level, "insert a level 0 - 23:");
         this.scenario = Integer.parseInt(scenario_num);
+    }
+
+    /**
+     * print the DB of my record.
+     */
+    public void MyResultGUI () {
+        JFrame Results = new JFrame();
+        String r="";
+
+        ArrayList<Integer> score = new ArrayList<Integer>();
+        ArrayList<Integer> moves = new ArrayList<Integer>();
+        int [] need_moves = {290,580,0,580,0,500,0,0,0,580,0,580,0,580,0,0,290,0,0,580,290,0,0,1140};
+        int [] need_grade = {145,450,0,720,0,570,0,0,0,510,0,1050,0,310,0,0,235,0,0,250,200,0,0,1000};
+        try {
+            for (int i = 0; i < 24; i++) {
+                score.add(i, 0);
+                moves.add(i, 0);
+            }
+            int count =0;
+            int moves_level=0 , score_level = 0,  level=0;
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connection =
+                    DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcUserPassword);
+            Statement statement = connection.createStatement();
+            String allCustomersQuery = "SELECT * FROM oop.Logs where userID = 206282170  and levelID < 23;";
+            ResultSet resultSet = statement.executeQuery(allCustomersQuery);
+            while(resultSet.next()) {
+                count++;
+                int id = resultSet.getInt("levelID");
+                score_level = resultSet.getInt("score");
+                moves_level = resultSet.getInt("moves");
+                try {
+                    if (score_level >= need_grade[id]) {
+                        if (score.get(id) < score_level && moves_level <= need_moves[id]) {
+                            score.remove(id);
+                            score.add(id, score_level);
+                            moves.remove(id);
+                            moves.add(id, moves_level);
+                        }
+                    }
+                }catch (ArrayIndexOutOfBoundsException e){e.printStackTrace();}
+                for (int i = 0; i < 24; i++) {
+                    if (score.get(i) != 0) {
+                        r += "Level : " + i + " best score: " + score.get(i) + " moves: " + moves.get(i) + "\n";
+                        level = i;
+                    }
+                }
+                if (level != 23) {
+                    level++;
+                    while (need_moves[level] == 0) {
+                        level++;
+                    }
+                }
+            }
+            JOptionPane.showMessageDialog(
+                    Results, "Numbers of games you play in the server : "+count + "\n"
+                            + r + "You are in level: "+ level);
+            System.out.println(count);
+            resultSet.close();
+            statement.close();
+            connection.close();
+        }
+
+        catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle.getMessage());
+            System.out.println("Vendor Error: " + sqle.getErrorCode());
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -122,7 +211,6 @@ public class MyGameGui  {
      * Play Automatic to choose kind of scenario and send to class AutoGame to start play.
      */
     public void Playautomatic() {
-
             chooseScenario();
             game_service game = Game_Server.getServer(scenario);
             AutoGame Auto= new AutoGame (this);

@@ -70,7 +70,7 @@ public class Graph_GUI extends JFrame implements ActionListener {
     private void DrawVertex(Graphics g, Point3D min, Point3D max) {
         if(this.g != null){
             Collection<node_data> c = this.g.getV();
-        for (node_data node: c) {//draw all the vertex in the window
+            for (node_data node: c) {//draw all the vertex in the window
                 g.setColor(Color.BLACK);
                 double x = node.getLocation().x();
                 x = scale(x, min.x(), max.x(), 100, 650);
